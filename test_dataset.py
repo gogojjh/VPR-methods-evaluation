@@ -41,7 +41,9 @@ def read_images_paths(dataset_folder):
         print(f"Searching test images in {dataset_folder} with glob()")
         images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
         if len(images_paths) == 0:
-            raise FileNotFoundError(f"Directory {dataset_folder} does not contain any JPEG images")
+            images_paths = sorted(glob(f"{dataset_folder}/**/*.png", recursive=True))
+            if len(images_paths) == 0:
+                raise FileNotFoundError(f"Directory {dataset_folder} does not contain any JPEG or PNG images")
     return images_paths
 
 
@@ -96,6 +98,7 @@ class TestDataset(data.Dataset):
         ]
         if image_size:
             transformations.append(transforms.Resize(size=image_size, antialias=True))
+
         self.transform = transforms.Compose(transformations)
     
     def __getitem__(self, index):

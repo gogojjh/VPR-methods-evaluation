@@ -15,6 +15,7 @@ import parser
 import commons
 import visualizations
 from test_dataset import TestDataset
+import time
 
 args = parser.parse_arguments()
 start_time = datetime.now()
@@ -46,11 +47,13 @@ with torch.inference_mode():
         
     logging.debug("Extracting queries descriptors for evaluation/testing using batch size 1")
     queries_subset_ds = Subset(test_ds,
-                                list(range(test_ds.num_database, test_ds.num_database + test_ds.num_queries)))
+                               list(range(test_ds.num_database, test_ds.num_database + test_ds.num_queries)))
     queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
                                     batch_size=1)
+    start_time = time.time()
     for images, indices in tqdm(queries_dataloader):
         descriptors = model(images.to(args.device))
+        print('Extract desc costs: {:3f}s'.format(time.time() - start_time))
         descriptors = descriptors.cpu().numpy()
         all_descriptors[indices.numpy(), :] = descriptors
 
@@ -63,12 +66,14 @@ if args.save_descriptors:
     np.save(log_dir / "database_descriptors.npy", database_descriptors)
 
 # Use a kNN to find predictions
+start_time = time.time()
 faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
 faiss_index.add(database_descriptors)
 del database_descriptors, all_descriptors
 
 logging.debug("Calculating recalls")
 _, predictions = faiss_index.search(queries_descriptors, max(args.recall_values))
+print('Matching desc costs: {}s'.format((time.time() - start_time) / len(queries_descriptors)))
 
 # For each query, check if the predictions are correct
 if args.use_labels:
