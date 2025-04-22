@@ -13,7 +13,7 @@ def parse_arguments():
     parser.add_argument(
         "--method",
         type=str,
-        default="cosplace",
+        default="megaloc",
         choices=[
             "netvlad",
             "apgem",
@@ -33,6 +33,9 @@ def parse_arguments():
             "salad-indoor",
             "cricavpr",
             "clique-mining",
+            "megaloc",
+            "boq",
+            "dinomix"
         ],
         help="_",
     )
@@ -40,7 +43,7 @@ def parse_arguments():
         "--backbone",
         type=str,
         default=None,
-        choices=[None, "VGG16", "ResNet18", "ResNet50", "ResNet101", "ResNet152"],
+        choices=[None, "VGG16", "ResNet18", "ResNet50", "ResNet101", "ResNet152", "Dinov2"],
         help="_",
     )
     parser.add_argument("--descriptors_dimension", type=int, default=None, help="_")
@@ -112,7 +115,7 @@ def parse_arguments():
         if args.backbone is None:
             args.backbone = "ResNet50"
         if args.descriptors_dimension is None:
-            args.descriptors_dimension = 512
+            args.descriptors_dimension = 2048
         if args.backbone == "VGG16" and args.descriptors_dimension not in [64, 128, 256, 512]:
             raise ValueError("When using CosPlace with VGG16 the descriptors_dimension must be in [64, 128, 256, 512]")
         if args.backbone == "ResNet18" and args.descriptors_dimension not in [32, 64, 128, 256, 512]:
@@ -136,7 +139,7 @@ def parse_arguments():
         if args.backbone is None:
             args.backbone = "ResNet50"
         if args.descriptors_dimension is None:
-            args.descriptors_dimension = 512
+            args.descriptors_dimension = 8192
         if args.backbone not in [None, "ResNet50"]:
             raise ValueError("When using Conv-AP the backbone must be None or ResNet50")
         if args.descriptors_dimension not in [None, 512, 2048, 4096, 8192]:
@@ -148,7 +151,7 @@ def parse_arguments():
         if args.backbone is None:
             args.backbone = "ResNet50"
         if args.descriptors_dimension is None:
-            args.descriptors_dimension = 512
+            args.descriptors_dimension = 4096
         if args.backbone not in [None, "ResNet50"]:
             raise ValueError("When using Conv-AP the backbone must be None or ResNet50")
         if args.descriptors_dimension not in [None, 128, 512, 4096]:
@@ -158,7 +161,7 @@ def parse_arguments():
         if args.backbone is None:
             args.backbone = "ResNet50"
         if args.descriptors_dimension is None:
-            args.descriptors_dimension = 512
+            args.descriptors_dimension = 2048
         if args.backbone == "VGG16" and args.descriptors_dimension not in [512]:
             raise ValueError("When using EigenPlaces with VGG16 the descriptors_dimension must be in [512]")
         if args.backbone == "ResNet18" and args.descriptors_dimension not in [256, 512]:
@@ -200,6 +203,26 @@ def parse_arguments():
     elif args.method == "cricavpr":
         args.backbone = "Dinov2"
         args.descriptors_dimension = 10752
+
+    elif args.method == "megaloc":
+        args.backbone = "Dinov2"
+        args.descriptors_dimension = 8448
+
+    elif args.method == "boq":
+        if args.backbone not in ["ResNet50", "Dinov2"]:
+            raise ValueError(f"When using BoQ the backbone must be ResNet50 or Dinov2")
+        if args.backbone in [None, "ResNet50"]:
+            args.backbone = "ResNet50"
+            args.descriptors_dimension = 16384
+            args.image_size = [384, 384]
+        if args.backbone == "Dinov2":
+            args.descriptors_dimension = 12288
+            args.image_size = [322, 322]
+
+    elif args.method == "dinomix":
+        args.backbone = "Dinov2"
+        args.descriptors_dimension = 4096
+        args.image_size = [224, 224]
 
     if args.image_size and len(args.image_size) > 2:
         raise ValueError(

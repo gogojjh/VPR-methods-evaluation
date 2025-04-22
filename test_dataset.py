@@ -1,9 +1,10 @@
 import os
-import numpy as np
 from glob import glob
-from PIL import Image
+
+import numpy as np
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from PIL import Image
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -11,15 +12,15 @@ def read_images_paths(dataset_folder):
     """Find images within 'dataset_folder'. If the file
     'dataset_folder'_images_paths.txt exists, read paths from such file.
     Otherwise, use glob(). Keeping the paths in the file speeds up computation,
-    because using glob over large folders might be slow.
+    because using glob over very large folders might be slow.
 
     Parameters
     ----------
-    dataset_folder : str, folder containing JPEG images
+    dataset_folder : str, folder containing images
 
     Returns
     -------
-    images_paths : list[str], paths of JPEG images within dataset_folder
+    images_paths : list[str], paths of images within dataset_folder
     """
 
     if not os.path.exists(dataset_folder):
@@ -40,7 +41,8 @@ def read_images_paths(dataset_folder):
             )
     else:
         print(f"Searching test images in {dataset_folder} with glob()")
-        images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
+        images_paths = sorted(glob(f"{dataset_folder}/**/*", recursive=True))
+        images_paths = [p for p in images_paths if os.path.isfile(p) and os.path.splitext(p)[1].lower() in [".jpg", ".jpeg", ".png"]]
         if len(images_paths) == 0:
             images_paths = sorted(glob(f"{dataset_folder}/**/*.png", recursive=True))
             if len(images_paths) == 0:
