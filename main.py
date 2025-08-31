@@ -67,6 +67,7 @@ def main(args):
 
     queries_descriptors = all_descriptors[test_ds.num_database :]
     database_descriptors = all_descriptors[: test_ds.num_database]
+    print(f"Desc Shape: {all_descriptors.shape}")
 
     if args.save_descriptors:
         logger.info(f"Saving the descriptors in {log_dir}")
@@ -95,6 +96,10 @@ def main(args):
         recalls = recalls / test_ds.num_queries * 100
         recalls_str = ", ".join([f"R@{val}: {rec:.1f}" for val, rec in zip(args.recall_values, recalls)])
         logger.info(recalls_str)
+
+        # Save the recalls_str to a file in log_dir
+        with open(Path('logs') / f"{args.log_dir}_recalls.txt", "w") as f:
+            f.write(recalls_str + "\n")
 
     # Save visualizations of predictions
     if args.num_preds_to_save != 0:
