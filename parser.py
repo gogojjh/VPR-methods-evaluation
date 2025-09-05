@@ -61,7 +61,7 @@ def parse_arguments():
         "--recall_values",
         type=int,
         nargs="+",
-        default=[1, 5, 10, 20],
+        default=[1, 5, 10, 20, 50, 100],
         help="values for recall (e.g. recall@1, recall@5)",
     )
     parser.add_argument(

@@ -3,3 +3,6 @@
 __pycache__
 logs/
 trained_models/
+*.jpg
+*.png
+*.jpeg

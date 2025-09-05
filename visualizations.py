@@ -50,6 +50,11 @@ def build_prediction_image(images_paths, preds_correct):
 
     images = [Image.open(path).convert("RGB") for path in images_paths]
     for img_idx, (img, is_correct) in enumerate(zip(images, preds_correct)):
+        ####################################################
+        # NOTE(gogojjh): Add UTM coordinates to the label
+        utm_east, utm_north = float(images_paths[img_idx].split("@")[1]), float(images_paths[img_idx].split("@")[2])
+        labels[img_idx] += f"\n({utm_east:.1f}, {utm_north:.1f})"
+        ####################################################
         if is_correct is None:
             continue
         color = (0, 1, 0) if is_correct else (1, 0, 0)
