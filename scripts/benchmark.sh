@@ -28,23 +28,27 @@ if [ "$SAVE_PREDS" = "True" ]; then
     #     --num_preds_to_save=5 --batch_size=8 --image_size 224 224 \
     #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=anyloc-unstructured_${DATASET}
 else
-    python3 ${PROJECT_PATH}/main.py --method=cosplace --backbone=ResNet50 --descriptors_dimension=2048 \
-        --batch_size=8 --image_size 224 224 \
-        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=cosplace_${DATASET}
+    # python3 ${PROJECT_PATH}/main.py --method=cosplace --backbone=ResNet50 --descriptors_dimension=2048 \
+    #     --batch_size=8 --image_size 224 224 \
+    #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=cosplace_${DATASET}
 
-    python3 ${PROJECT_PATH}/main.py --method=eigenplaces --backbone=ResNet50 --descriptors_dimension=2048 \
-        --batch_size=8 --image_size 224 224 \
-        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=eigenplaces_${DATASET}
+    # python3 ${PROJECT_PATH}/main.py --method=eigenplaces --backbone=ResNet50 --descriptors_dimension=2048 \
+    #     --batch_size=8 --image_size 224 224 \
+    #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=eigenplaces_${DATASET}
 
-    python3 ${PROJECT_PATH}/main.py --method=megaloc --backbone=Dinov2 --descriptors_dimension=8448 \
-        --batch_size=8 --image_size 224 224 \
-        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=megaloc_${DATASET}
+    # python3 ${PROJECT_PATH}/main.py --method=megaloc --backbone=Dinov2 --descriptors_dimension=8448 \
+    #     --batch_size=8 --image_size 224 224 \
+    #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=megaloc_${DATASET}
 
-    python3 ${PROJECT_PATH}/main.py --method=clique-mining --backbone=Dinov2 --descriptors_dimension=8448 \
-        --batch_size=8 --image_size 224 224 \
-        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=clique-mining_${DATASET}
+    # python3 ${PROJECT_PATH}/main.py --method=clique-mining --backbone=Dinov2 --descriptors_dimension=8448 \
+    #     --batch_size=8 --image_size 224 224 \
+    #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=clique-mining_${DATASET}
 
-    python3 ${PROJECT_PATH}/main.py --method=anyloc-unstructured --backbone=Dinov2 --descriptors_dimension=49152 \
+    # python3 ${PROJECT_PATH}/main.py --method=anyloc-unstructured --backbone=Dinov2 --descriptors_dimension=49152 \
+    #     --batch_size=8 --image_size 224 224 \
+    #     --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=anyloc-unstructured_${DATASET}
+
+    python3 ${PROJECT_PATH}/main.py --method=selavpr-pitts30k --backbone=Dinov2 --descriptors_dimension=1024 \
         --batch_size=8 --image_size 224 224 \
-        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=anyloc-unstructured_${DATASET}
+        --database_folder=${DATABASE_FOLDER} --queries_folder=${QUERIES_FOLDER} --log_dir=selavpr-pitts30k_${DATASET}
 fi

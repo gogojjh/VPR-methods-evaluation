@@ -51,7 +51,11 @@ def main(args):
         )
         all_descriptors = np.empty((len(test_ds), args.descriptors_dimension), dtype="float32")
         for images, indices in tqdm(database_dataloader):
-            descriptors = model(images.to(args.device))
+            output = model(images.to(args.device))
+            if isinstance(output, tuple) and len(output) == 2:
+                _, descriptors = output
+            else:
+                descriptors = output
             descriptors = descriptors.cpu().numpy()
             all_descriptors[indices.numpy(), :] = descriptors
 
@@ -61,7 +65,11 @@ def main(args):
         )
         queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers, batch_size=1)
         for images, indices in tqdm(queries_dataloader):
-            descriptors = model(images.to(args.device))
+            output = model(images.to(args.device))
+            if isinstance(output, tuple) and len(output) == 2:
+                _, descriptors = output
+            else:
+                descriptors = output
             descriptors = descriptors.cpu().numpy()
             all_descriptors[indices.numpy(), :] = descriptors
 
@@ -85,6 +93,9 @@ def main(args):
     # For each query, check if the predictions are correct
     if args.use_labels:
         positives_per_query = test_ds.get_positives()
+        queries_with_positives = np.where(np.array([len(positives) > 0 for positives in positives_per_query]))[0]
+        num_queries_with_positives = queries_with_positives.shape[0]
+        
         recalls = np.zeros(len(args.recall_values))
         for query_index, preds in enumerate(predictions):
             for i, n in enumerate(args.recall_values):
@@ -93,13 +104,16 @@ def main(args):
                     break
 
         # Divide by num_queries and multiply by 100, so the recalls are in percentages
-        recalls = recalls / test_ds.num_queries * 100
+        recalls = recalls / num_queries_with_positives * 100
         recalls_str = ", ".join([f"R@{val}: {rec:.1f}" for val, rec in zip(args.recall_values, recalls)])
         logger.info(recalls_str)
 
         # Save the recalls_str to a file in log_dir
         with open(Path('logs') / f"{args.log_dir}_recalls.txt", "w") as f:
             f.write(recalls_str + "\n")
+
+        # Only keep predictions for queries with positives
+        predictions = predictions[queries_with_positives, :]
 
     # Save visualizations of predictions
     if args.num_preds_to_save != 0:
