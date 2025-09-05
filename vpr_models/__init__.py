@@ -62,4 +62,9 @@ def get_model(method, backbone=None, descriptors_dimension=None):
     elif method == "dinomix":
         model = dinomix.get_dino_mix()
 
+    elif method.startswith("selavpr"):
+        domain = method.split("-")[1]
+        selavpr = torch.hub.load("gogojjh/SelaVPR", "trained_model", domain=domain)
+        model = ResizingWrapper(selavpr, resize_type=224)
+
     return model

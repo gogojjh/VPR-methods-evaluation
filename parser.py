@@ -35,7 +35,9 @@ def parse_arguments():
             "clique-mining",
             "megaloc",
             "boq",
-            "dinomix"
+            "dinomix",
+            "selavpr-pitts30k",
+            "selavpr-msls"
         ],
         help="_",
     )
@@ -222,6 +224,11 @@ def parse_arguments():
     elif args.method == "dinomix":
         args.backbone = "Dinov2"
         args.descriptors_dimension = 4096
+        args.image_size = [224, 224]
+
+    elif args.method.startswith("selavpr"):
+        args.backbone = "Dinov2"
+        args.descriptors_dimension = 1024
         args.image_size = [224, 224]
 
     if args.image_size and len(args.image_size) > 2:
