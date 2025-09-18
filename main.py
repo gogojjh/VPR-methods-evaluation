@@ -43,6 +43,7 @@ def main(args):
     )
     logger.info(f"Testing on {test_ds}")
 
+    ##### Stage 1: Extract descriptors and Retrieval #####
     with torch.inference_mode():
         logger.debug("Extracting database descriptors for evaluation/testing")
         database_subset_ds = Subset(test_ds, list(range(test_ds.num_database)))
@@ -90,6 +91,11 @@ def main(args):
     logger.debug("Calculating recalls")
     _, predictions = faiss_index.search(queries_descriptors, max(args.recall_values))
 
+    #### Stage 2: Reranking by sequence/set-based matching #####
+
+
+
+    ##### Evaluation Metrics #####
     # For each query, check if the predictions are correct
     if args.use_labels:
         positives_per_query = test_ds.get_positives()
@@ -105,7 +111,8 @@ def main(args):
 
         # Divide by num_queries and multiply by 100, so the recalls are in percentages
         recalls = recalls / num_queries_with_positives * 100
-        recalls_str = ", ".join([f"R@{val}: {rec:.1f}" for val, rec in zip(args.recall_values, recalls)])
+        recalls_str  = f", ".join([f"R@{val}: {rec:.1f}" for val, rec in zip(args.recall_values, recalls)])
+        recalls_str += f", Total Query: {test_ds.num_queries} and Total Database: {test_ds.num_database}"
         logger.info(recalls_str)
 
         # Save the recalls_str to a file in log_dir

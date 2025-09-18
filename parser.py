@@ -37,7 +37,8 @@ def parse_arguments():
             "boq",
             "dinomix",
             "selavpr-pitts30k",
-            "selavpr-msls"
+            "selavpr-msls",
+            "supervlad"
         ],
         help="_",
     )
@@ -230,6 +231,14 @@ def parse_arguments():
         args.backbone = "Dinov2"
         args.descriptors_dimension = 1024
         args.image_size = [224, 224]
+
+    elif args.method == "supervlad":
+        if args.backbone not in ['Dinov2']:
+            raise ValueError(f"When using SuperVLAD the backbone must be Dinov2")
+
+        args.backbone = "dino"
+        args.descriptors_dimension = 3072
+        args.image_size = [518, 518]
 
     if args.image_size and len(args.image_size) > 2:
         raise ValueError(
