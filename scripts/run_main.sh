@@ -1,7 +1,7 @@
 #!/bin/bash
 # Usage:
-#   bash scripts/run_main.sh              # quick mode: online compute descriptors, R@1,5,10
-#   bash scripts/run_main.sh benchmark    # benchmark mode: save descriptors, R@1,5,10
+#   bash scripts/run_main.sh              # quick mode: online descriptors, R@1,5,10, save top-3 preds
+#   bash scripts/run_main.sh benchmark    # benchmark mode: save descriptors, R@1,5,10, save top-3 preds
 #
 # Data:    <repo>/assets/database  &  <repo>/assets/queries
 # Results: <repo>/logs/<method>_assets/<timestamp>/
@@ -20,14 +20,16 @@ DATASET=assets
 
 cd "${PROJECT_PATH}"
 
+NUM_PREDS_TO_SAVE=3
+
 if [ "$BENCHMARK" = true ]; then
     BATCH_SIZE=16
-    EXTRA_ARGS="--recall_values 1 5 10 --save_descriptors"
-    echo "=== Mode: BENCHMARK (save_descriptors=true, recall@1,5,10) ==="
+    EXTRA_ARGS="--recall_values 1 5 10 --save_descriptors --num_preds_to_save=${NUM_PREDS_TO_SAVE}"
+    echo "=== Mode: BENCHMARK (save_descriptors=true, recall@1,5,10, preds=${NUM_PREDS_TO_SAVE}) ==="
 else
     BATCH_SIZE=8
-    EXTRA_ARGS="--recall_values 1 5 10"
-    echo "=== Mode: QUICK (online descriptors, recall@1,5,10) ==="
+    EXTRA_ARGS="--recall_values 1 5 10 --num_preds_to_save=${NUM_PREDS_TO_SAVE}"
+    echo "=== Mode: QUICK (online descriptors, recall@1,5,10, preds=${NUM_PREDS_TO_SAVE}) ==="
 fi
 
 run_model() {
