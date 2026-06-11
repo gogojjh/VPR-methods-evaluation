@@ -37,6 +37,8 @@ def parse_arguments():
             "boq",
             "dinomix",
             "edtformer",
+            "selavpr-pitts30k",
+            "selavpr-msls",
             "supervlad",
             "supervlad-crossim",
             "qaa"
@@ -65,7 +67,7 @@ def parse_arguments():
         "--recall_values",
         type=int,
         nargs="+",
-        default=[1, 5, 10, 20],
+        default=[1, 5, 10, 20, 50, 100],
         help="values for recall (e.g. recall@1, recall@5)",
     )
     parser.add_argument(
@@ -95,6 +97,17 @@ def parse_arguments():
         action="store_true",
         help="set to True if you want to save the descriptors extracted by the model",
     )
+
+    ##### NOTE(gogojjh): Multiview Matching #####
+    parser.add_argument("--multiview_matching", action="store_true", help="Enable multi-view matching")
+    parser.add_argument("--sequence_length", type=int, default=1, help="Number of images per sequence")
+    parser.add_argument("--mm_method", type=str, default="none", choices=["seqnet", "deltanet", "seqvlad", "none"])
+    parser.add_argument("--mm_resume", type=str, default=None, help="Path to checkpoint for the multi-view model")
+    parser.add_argument("--mm_permute", action="store_true", help="Permute the sequence of images")
+    parser.add_argument("--pca_dim", type=int, default=None, help="Output dimension for the PCA")
+    parser.add_argument("--pca_dataset_folder", type=str, default=None, help="Path to the PCA dataset")
+    #############################################
+
     args = parser.parse_args()
 
     args.use_labels = not args.no_labels
@@ -228,6 +241,11 @@ def parse_arguments():
         args.descriptors_dimension = 4096
         args.image_size = [224, 224]
 
+    elif args.method.startswith("selavpr"):
+        args.backbone = "Dinov2"
+        args.descriptors_dimension = 1024
+        args.image_size = [224, 224]
+
     elif args.method in ["supervlad", "supervlad-crossim"]:
         args.backbone = "Dinov2"
         args.descriptors_dimension = 3072
@@ -256,3 +274,10 @@ def parse_arguments():
         args.recall_values.append(args.num_preds_to_save)
 
     return args
+
+
+if __name__ == "__main__":
+    import main
+
+    args = parse_arguments()
+    main.main(args)

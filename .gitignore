@@ -3,3 +3,11 @@
 __pycache__
 logs/
 trained_models/
+*.jpg
+*.png
+*.jpeg
+*.egg-info/
+build/
+test/
+third_party/
+*.7z
