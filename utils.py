@@ -56,8 +56,8 @@ def parse_image_name(image_name):
             "scene": scene,
             "img_id": img_id,
         }
-    except Exception as e:
-        print(f"Failed to parse image name {image_name}: {e}")
+    except Exception:
+        return None
         return None
 
 def compute_diff_matrix(db_descs, query_descs) -> np.ndarray:

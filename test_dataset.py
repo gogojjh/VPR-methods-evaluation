@@ -1,4 +1,5 @@
 import os
+import re
 from glob import glob
 
 import numpy as np
@@ -152,11 +153,18 @@ class TestDataset(data.Dataset):
 
         parse_data = []
         for img_name in raw_database_paths + raw_queries_paths:
-            data = utils.parse_image_name(img_name)
+            parsed = utils.parse_image_name(img_name)
+            if parsed is None or parsed.get('scene') is None:
+                img_id_str = os.path.splitext(os.path.basename(img_name))[0]
+                scene = 'default'
+                img_id = 0
+                for match in re.finditer(r'\d+', img_id_str):
+                    img_id = int(match.group())
+                parsed = {'scene': scene, 'img_id': img_id}
             parse_data.append({
                 'path': img_name,
-                'scene': data['scene'],
-                'img_id': data['img_id']
+                'scene': parsed['scene'],
+                'img_id': parsed['img_id']
             })
 
         data_groups_database = group_and_sort(parse_data[:num_database])
@@ -197,7 +205,11 @@ class TestDataset(data.Dataset):
                 print(f"Error opening image {path}: {e}, using last image instead")
                 continue
 
-        return torch.stack(imgs), torch.tensor(indices)
+        imgs_tensor = torch.stack(imgs)
+        indices_tensor = torch.tensor(indices)
+        if self.seq_len == 1:
+            return imgs_tensor.squeeze(0), indices_tensor.squeeze(0)
+        return imgs_tensor, indices_tensor
 
     def __len__(self):
         return len(self.images_paths)
