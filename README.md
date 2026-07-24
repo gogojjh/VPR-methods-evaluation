@@ -3,6 +3,13 @@
 This repo allows you to easily test almost any SOTA VPR model within a minute.
 The architecture code and weights are from the respective authors of the papers, ensuring reliability.
 
+## Differences from upstream ([gmberton/VPR-methods-evaluation](https://github.com/gmberton/VPR-methods-evaluation))
+
+This fork (`gogojjh/VPR-methods-evaluation`) tracks upstream `master` and adds:
+- **Pip-installable packaging**: a `setup.py` so the package can be installed (`pip install -e .`) as `VPR_methods_evaluation` and imported by other tools, e.g. OpenNavMap's `python/utils_map_merging.py`.
+- **SelaVPR model support**: `vpr_models/__init__.py` and `parser.py` add a `selavpr` backbone option (loaded via `torch.hub.load("gogojjh/SelaVPR", ...)`).
+- **Benchmark/sequence evaluation tooling**: `scripts/run_main.sh` (unified quick-test / benchmark modes), `test_dataset_set.py`, and `utils.py` helpers for running and evaluating VPR methods over full benchmark datasets rather than a single query/database pair.
+
 ## Basic use on an unlabelled dataset
 
 Simply run this to try a method on a (unlabelled) toy dataset contained in assets. This is super lightweight and will take a few seconds even running on a CPU of a laptop.
